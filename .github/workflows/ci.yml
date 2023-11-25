@@ -72,7 +72,7 @@ jobs:
 
     - name: Run All_Days_Benchmark
       run: dotnet run -c Release --no-build --filter AoC_${{ env.YEAR }}.Benchmarks.All_Days_Benchmark.SolveAll
-      working-directory: ./src/AoC_${{ env.YEAR }}.Benchmarks
+      working-directory: ./tests/AoC_${{ env.YEAR }}.Benchmarks
 
     - name: 'Upload ${{ matrix.os }} artifacts'
       continue-on-error: true
