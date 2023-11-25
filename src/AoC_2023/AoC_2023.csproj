@@ -1,23 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AoCHelper" Version="3.0.0" />
+    <PackageReference Include="FileParser" Version="2.4.0" />
+    <PackageReference Include="morelinq" Version="4.0.0" />
+    <PackageReference Include="SheepTools" Version="0.13.0" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <NoWarn>S101</NoWarn>
-  </PropertyGroup>
 
   <ItemGroup>
     <None Update="Inputs\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Inputs\" />
   </ItemGroup>
 
 </Project>

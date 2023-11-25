@@ -3,21 +3,81 @@ name: CI
 on:
   push:
 
+env:
+  DOTNET_VERSION: 8.0.x
+  YEAR: '2023'
+
 jobs:
-  build-and-run:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+      fail-fast: false
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build
+      run: dotnet build -c Release
+
+    - name: Run tests
+      run: dotnet test -c Release --no-build
+
+  run:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Build
       run: dotnet build -c Release
 
-    - name: Solve all
+    - name: Run
       run: dotnet run -c Release --no-build -- all
-      working-directory: ./AdventOfCode
+      working-directory: ./src/AoC_${{ env.YEAR }}
+
+  benchmark:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build
+      run: dotnet build -c Release
+
+    - name: Run All_Days_Benchmark
+      run: dotnet run -c Release --no-build --filter AoC_${{ env.YEAR }}.Benchmarks.All_Days_Benchmark.SolveAll
+      working-directory: ./src/AoC_${{ env.YEAR }}.Benchmarks
+
+    - name: 'Upload ${{ matrix.os }} artifacts'
+      continue-on-error: true
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-${{ matrix.os }}-${{ github.run_number }}
+        path: ./src/AoC_${{ env.YEAR }}.Benchmarks/BenchmarkDotNet.Artifacts/results/
+        if-no-files-found: error
