@@ -11,8 +11,8 @@ public static class SolutionTests
     {
         if (Activator.CreateInstance(type) is BaseProblem instance)
         {
-            Assert.AreEqual(sol1, await instance.Solve_1());
-            Assert.AreEqual(sol2, await instance.Solve_2());
+            await Assert.ThatAsync(async () => await instance.Solve_1(), Is.EqualTo(sol1));
+            await Assert.ThatAsync(async () => await instance.Solve_2(), Is.EqualTo(sol2));
         }
         else
         {
