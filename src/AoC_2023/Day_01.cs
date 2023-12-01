@@ -150,7 +150,7 @@ public class Day_01 : BaseDay
     }
 
     /// <summary>
-    /// Inspired by imlisa.
+    /// Inspired by Lisa (@imlisa)
     /// https://paste.mod.gg/xnrzticaakaf/0
     /// </summary>
     /// <returns></returns>
@@ -458,6 +458,10 @@ public class Day_01 : BaseDay
         }
     }
 
+    /// <summary>
+    /// By Thinker (@thinker227)
+    /// </summary>
+    /// <returns></returns>
     public int Solve_2_ListPatternsAndSlidingWindows()
     {
         return
