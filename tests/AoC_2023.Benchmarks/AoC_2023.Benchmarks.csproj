@@ -13,4 +13,8 @@
     <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="BenchmarkDotNet.Attributes"/>
+  </ItemGroup>
+
 </Project>
