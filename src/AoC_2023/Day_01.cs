@@ -1,4 +1,6 @@
-﻿namespace AoC_2023;
+﻿using MoreLinq;
+
+namespace AoC_2023;
 
 public class Day_01 : BaseDay
 {
@@ -100,7 +102,7 @@ public class Day_01 : BaseDay
 
                 if (!endIndexFound)
                 {
-                    endIndex = item[i] - zero;
+                    endIndex = item[^(i + 1)] - zero;
                     if (endIndex >= 1 && endIndex <= 9)
                     {
                         endIndexFound = true;
@@ -108,6 +110,109 @@ public class Day_01 : BaseDay
                 }
             }
             result += (startIndex * 10) + endIndex;
+        }
+
+        return result;
+    }
+
+    public int Solve_1_NoLinq_OptimizedParsingTwoLoops()
+    {
+        const char zero = '0';
+
+        var result = 0;
+
+        foreach (var item in _input)
+        {
+            int startIndex = 0;
+            int endIndex = 0;
+
+            for (int i = 0; i < item.Length; ++i)
+            {
+                startIndex = item[i] - zero;
+                if (startIndex >= 1 && startIndex <= 9)
+                {
+                    break;
+                }
+            }
+
+            for (int i = item.Length - 1; i >= 0; --i)
+            {
+                endIndex = item[i] - zero;
+                if (endIndex >= 1 && endIndex <= 9)
+                {
+                    break;
+                }
+            }
+            result += (startIndex * 10) + endIndex;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Inspired by imlisa.
+    /// https://paste.mod.gg/xnrzticaakaf/0
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="SolvingException"></exception>
+    public int Solve_1_CharIsDigit()
+    {
+        const char zero = '0';
+
+        var result = 0;
+
+        foreach (var item in _input)
+        {
+            result += (10 * FindStartDigit(item)) + FindEndtDigit(item);
+        }
+
+        return result;
+
+        static int FindStartDigit(ReadOnlySpan<char> item)
+        {
+            for (int i = 0; i < item.Length; ++i)
+            {
+                if (char.IsDigit(item[i]))
+                {
+                    return item[i] - zero;
+                }
+            }
+
+            throw new SolvingException();
+        }
+
+        static int FindEndtDigit(ReadOnlySpan<char> item)
+        {
+            for (int i = item.Length - 1; i >= 0; --i)
+            {
+                if (char.IsDigit(item[i]))
+                {
+                    return item[i] - zero;
+                }
+            }
+
+            throw new SolvingException();
+        }
+    }
+
+    /// <summary>
+    /// By viceroypenguin
+    /// https://github.com/viceroypenguin/adventofcode/blob/master/AdventOfCode.Puzzles/2023/day01.fastest.cs
+    /// </summary>
+    /// <returns></returns>
+    public int Solve_1_Span()
+    {
+        const char zero = '0';
+        const char nine = '9';
+
+        var result = 0;
+
+        foreach (var item in _input)
+        {
+            var span = item.AsSpan();
+
+            result += 10 * (span[span.IndexOfAnyInRange(zero, nine)] - zero);
+            result += span[span.LastIndexOfAnyInRange(zero, nine)] - zero;
         }
 
         return result;
@@ -351,5 +456,31 @@ public class Day_01 : BaseDay
                 }
             }
         }
+    }
+
+    public int Solve_2_ListPatternsAndSlidingWindows()
+    {
+        return
+            _input
+            .Select(x => x
+                .WindowLeft(5)
+                .Select(int? (x) => x switch
+                {
+                    [>= '0' and <= '9' and var c, ..] => c - '0',
+                    ['o', 'n', 'e', ..] => 1,
+                    ['t', 'w', 'o', ..] => 2,
+                    ['t', 'h', 'r', 'e', 'e', ..] => 3,
+                    ['f', 'o', 'u', 'r', ..] => 4,
+                    ['f', 'i', 'v', 'e', ..] => 5,
+                    ['s', 'i', 'x', ..] => 6,
+                    ['s', 'e', 'v', 'e', 'n', ..] => 7,
+                    ['e', 'i', 'g', 'h', 't', ..] => 8,
+                    ['n', 'i', 'n', 'e', ..] => 9,
+                    _ => null
+                })
+            .Where(x => x is not null)
+            .Select(x => x!.Value))
+        .Select(xs => (xs.First() * 10) + xs.Last())
+        .Sum();
     }
 }
