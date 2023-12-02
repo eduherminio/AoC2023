@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AoC_2023;
 
@@ -39,18 +38,28 @@ public partial class Day_02 : BaseDay
         const int maxGreenCubes = 13;
         const int maxBlueCubes = 14;
 
-        var possibleGames = _input.Where(game =>
-            game.CubeSets.TrueForAll(cubeSet =>
-                cubeSet.Red <= maxRedCubes
-                && cubeSet.Blue <= maxBlueCubes
-                && cubeSet.Green <= maxGreenCubes));
-
-        var result = possibleGames.Sum(g => g.Id);
+        var result = _input
+            .Where(game =>
+                game.CubeSets.TrueForAll(cubeSet =>
+                    cubeSet.Red <= maxRedCubes
+                    && cubeSet.Blue <= maxBlueCubes
+                    && cubeSet.Green <= maxGreenCubes))
+            .Sum(g => g.Id);
 
         return new($"{result}");
     }
 
-    public override ValueTask<string> Solve_2()
+    public override ValueTask<string> Solve_2() => new($"{Solve_2_Linq()}");
+
+    public int Solve_2_Linq()
+    {
+        return _input.Sum(game =>
+            game.CubeSets.Max(cubeSet => cubeSet.Red)
+            * game.CubeSets.Max(cubeSet => cubeSet.Green)
+            * game.CubeSets.Max(cubeSet => cubeSet.Blue));
+    }
+
+    public int Solve_2_Original()
     {
         int result = 0;
 
@@ -77,7 +86,7 @@ public partial class Day_02 : BaseDay
             result += maxRed * maxGreen * maxBlue;
         }
 
-        return new($"{result}");
+        return result;
     }
 
     private IEnumerable<Game> ParseInput()
