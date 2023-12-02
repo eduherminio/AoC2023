@@ -28,7 +28,7 @@ $cookie.Domain = "adventofcode.com"
 
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $session.Cookies.Add($cookie);
-$session.Headers.Add("User-Agent", "github.com/eduherminio/AoC2023")
+$session.Headers.Add("User-Agent", "github.com-eduherminio-AoC2023")
 
 
 Invoke-WebRequest $url -WebSession $session -TimeoutSec 5 -OutFile $outputPath
