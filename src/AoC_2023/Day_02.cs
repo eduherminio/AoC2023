@@ -32,24 +32,53 @@ public partial class Day_02 : BaseDay
         _input = ParseInput().ToList();
     }
 
-    public override ValueTask<string> Solve_1()
+    public override ValueTask<string> Solve_1() => new($"{Solve_1_NoLinq()}");
+
+    public override ValueTask<string> Solve_2() => new($"{Solve_2_Original()}");
+
+    public int Solve_1_Original()
     {
         const int maxRedCubes = 12;
         const int maxGreenCubes = 13;
         const int maxBlueCubes = 14;
 
-        var result = _input
+        return _input
             .Where(game =>
                 game.CubeSets.TrueForAll(cubeSet =>
                     cubeSet.Red <= maxRedCubes
                     && cubeSet.Blue <= maxBlueCubes
                     && cubeSet.Green <= maxGreenCubes))
             .Sum(g => g.Id);
-
-        return new($"{result}");
     }
 
-    public override ValueTask<string> Solve_2() => new($"{Solve_2_Linq()}");
+    public int Solve_1_NoLinq()
+    {
+        const int maxRedCubes = 12;
+        const int maxGreenCubes = 13;
+        const int maxBlueCubes = 14;
+
+        int result = 0;
+
+        foreach (var game in _input)
+        {
+            bool isValid = true;
+            foreach (var cubeSet in game.CubeSets)
+            {
+                if (cubeSet.Red > maxRedCubes || cubeSet.Blue > maxBlueCubes || cubeSet.Green > maxGreenCubes)
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+
+            if (isValid)
+            {
+                result += game.Id;
+            }
+        }
+
+        return result;
+    }
 
     public int Solve_2_Linq()
     {
@@ -91,7 +120,8 @@ public partial class Day_02 : BaseDay
 
     private IEnumerable<Game> ParseInput()
     {
-        var file = new ParsedFile(InputFilePath, new[] { ';', ':' });
+        char[] existingSeparator = [';', ':'];
+        var file = new ParsedFile(base.InputFilePath, existingSeparator);
 
         while (!file.Empty)
         {

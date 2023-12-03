@@ -230,7 +230,7 @@ public class Day_01 : BaseDay
         return result;
 
         // To avoid stackalloc in the loop
-        int FindResult(string item)
+        static int FindResult(string item)
         {
             int startIndex = 0;
             int endIndex = 0;
