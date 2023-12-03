@@ -15,10 +15,10 @@ public class Day_03 : BaseDay
         }
     }
 
-    private record Symbol(char Id, IntPoint Position);
+    private sealed record Symbol(char Id, IntPoint Position);
 
-    private List<Number> _numbers;
-    private List<Symbol> _symbols;
+    private readonly List<Number> _numbers;
+    private readonly List<Symbol> _symbols;
 
     public Day_03()
     {
