@@ -29,7 +29,7 @@ jobs:
       run: dotnet build -c Release
 
     - name: Run All_Days_Benchmark
-      run: dotnet run -c Release --no-build --filter *All_Days_Benchmark*
+      run: dotnet run -c Release --no-build --filter AoC_${{ env.YEAR }}.Benchmarks.All_Days_Benchmark.SolveAll
       working-directory: ./tests/AoC_${{ env.YEAR }}.Benchmarks
 
     - name: 'Upload ${{ matrix.os }} artifacts'
@@ -60,7 +60,7 @@ jobs:
       run: dotnet build -c Release
 
     - name: Run All_Days_Benchmark
-      run: dotnet run -c Release --no-build --filter *All_Days_Individually_Benchmark*
+      run: dotnet run -c Release --no-build --filter "*All_Days_Individually_Benchmark*"
       working-directory: ./tests/AoC_${{ env.YEAR }}.Benchmarks
 
     - name: 'Upload ${{ matrix.os }} artifacts'
