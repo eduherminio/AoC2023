@@ -2,7 +2,7 @@
 
 public class Day_04 : BaseDay
 {
-    private record Card(int Id, List<int> WinningNumbers, List<int> CardNumbers);
+    private sealed record Card(int Id, List<int> WinningNumbers, List<int> CardNumbers);
 
     private readonly List<Card> _input;
 
