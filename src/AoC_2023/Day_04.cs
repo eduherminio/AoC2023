@@ -11,13 +11,38 @@ public class Day_04 : BaseDay
         _input = ParseInput().ToList();
     }
 
-    public override ValueTask<string> Solve_1() => new($"{Solve_1_Original()}");
+    public override ValueTask<string> Solve_1() => new($"{Solve_1_NoPow()}");
 
     public override ValueTask<string> Solve_2() => new($"{Solve_2_NoDictionary()}");
 
     public int Solve_1_Original()
     {
         return _input.Sum(card => (int)Math.Pow(2, card.CardNumbers.Intersect(card.WinningNumbers).Count() - 1));
+    }
+
+    public int Solve_1_OptimizedIntersectOrder()
+    {
+        return _input.Sum(card => (int)Math.Pow(2, card.WinningNumbers.Intersect(card.CardNumbers).Count() - 1));
+    }
+
+    public int Solve_1_NoPow()
+    {
+        int result = 0;
+
+        foreach (var card in _input)
+        {
+            var winnerThatWeHave = card.WinningNumbers.Intersect(card.CardNumbers).Count();
+
+            int points = winnerThatWeHave == 0 ? 0 : 1;
+            for (int i = 1; i < winnerThatWeHave; ++i)
+            {
+                points *= 2;
+            }
+
+            result += points;
+        }
+
+        return result;
     }
 
     public int Solve_2_Original()
