@@ -1,6 +1,4 @@
-﻿using MoreLinq;
-
-namespace AoC_2023;
+﻿namespace AoC_2023;
 
 public class Day_04 : BaseDay
 {
@@ -31,9 +29,9 @@ public class Day_04 : BaseDay
             var card = cards.ElementAt(dictIndex);
 
             var cardsWon = card.Key.WinningNumbers.Intersect(card.Key.CardNumbers).Count();
-            for (int i = card.Key.Id + 1; i < card.Key.Id + 1 + cardsWon; i++)
+            for (int i = card.Key.Id; i < card.Key.Id + cardsWon; i++)
             {
-                cards[_input[i - 1]] += card.Value;
+                cards[_input[i]] += card.Value;
             }
         }
 
