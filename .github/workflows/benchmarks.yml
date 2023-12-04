@@ -2,7 +2,7 @@ name: Benchmarks
 
 on:
   push:
-  workflow_run:
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: 8.0.x
