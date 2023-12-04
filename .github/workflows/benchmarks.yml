@@ -1,0 +1,72 @@
+name: Benchmarks
+
+on:
+  push:
+  workflow_run:
+
+env:
+  DOTNET_VERSION: 8.0.x
+  YEAR: '2023'
+
+jobs:
+  benchmark:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build
+      run: dotnet build -c Release
+
+    - name: Run All_Days_Benchmark
+      run: dotnet run -c Release --no-build --filter *All_Days_Benchmark*
+      working-directory: ./tests/AoC_${{ env.YEAR }}.Benchmarks
+
+    - name: 'Upload ${{ matrix.os }} artifacts'
+      continue-on-error: true
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-${{ matrix.os }}-${{ github.run_number }}
+        path: ./src/AoC_${{ env.YEAR }}.Benchmarks/BenchmarkDotNet.Artifacts/results/
+        if-no-files-found: error
+
+  benchmark-individually:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Build
+      run: dotnet build -c Release
+
+    - name: Run All_Days_Benchmark
+      run: dotnet run -c Release --no-build --filter *All_Days_Individually_Benchmark*
+      working-directory: ./tests/AoC_${{ env.YEAR }}.Benchmarks
+
+    - name: 'Upload ${{ matrix.os }} artifacts'
+      continue-on-error: true
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-${{ matrix.os }}-${{ github.run_number }}-individually
+        path: ./src/AoC_${{ env.YEAR }}.Benchmarks/BenchmarkDotNet.Artifacts/results/
+        if-no-files-found: error

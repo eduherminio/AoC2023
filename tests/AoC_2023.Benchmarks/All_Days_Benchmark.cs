@@ -1,5 +1,4 @@
 ﻿using AoCHelper;
-using BenchmarkDotNet.Attributes;
 using System.Reflection;
 
 namespace AoC_2023.Benchmarks;

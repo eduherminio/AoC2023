@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FBE09BBA-34E4-4DED-94F2-44217330E37F}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\benchmarks.yml = .github\workflows\benchmarks.yml
 		Directory.Build.props = Directory.Build.props
 		pull.ps1 = pull.ps1
 	EndProjectSection

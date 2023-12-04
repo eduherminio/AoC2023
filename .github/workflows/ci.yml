@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+  workflow_run:
 
 env:
   DOTNET_VERSION: 8.0.x
@@ -50,34 +51,3 @@ jobs:
     - name: Run
       run: dotnet run -c Release --no-build -- all
       working-directory: ./src/AoC_${{ env.YEAR }}
-
-  benchmark:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-      fail-fast: false
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Build
-      run: dotnet build -c Release
-
-    - name: Run All_Days_Benchmark
-      run: dotnet run -c Release --no-build --filter AoC_${{ env.YEAR }}.Benchmarks.All_Days_Benchmark.SolveAll
-      working-directory: ./tests/AoC_${{ env.YEAR }}.Benchmarks
-
-    - name: 'Upload ${{ matrix.os }} artifacts'
-      continue-on-error: true
-      uses: actions/upload-artifact@v2
-      with:
-        name: artifacts-${{ matrix.os }}-${{ github.run_number }}
-        path: ./src/AoC_${{ env.YEAR }}.Benchmarks/BenchmarkDotNet.Artifacts/results/
-        if-no-files-found: error
