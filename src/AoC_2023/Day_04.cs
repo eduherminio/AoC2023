@@ -1,5 +1,4 @@
 ﻿using MoreLinq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AoC_2023;
 
@@ -25,9 +24,20 @@ public class Day_04 : BaseDay
 
     public int Solve_2_Original()
     {
-        var result = 0;
+        Dictionary<Card, int> cards = _input.ToDictionary(card => card, _ => 1);
 
-        return result;
+        for (int dictIndex = 0; dictIndex < cards.Count; ++dictIndex)
+        {
+            var card = cards.ElementAt(dictIndex);
+
+            var cardsWon = card.Key.WinningNumbers.Intersect(card.Key.CardNumbers).Count();
+            for (int i = card.Key.Id + 1; i < card.Key.Id + 1 + cardsWon; i++)
+            {
+                cards[_input[i - 1]] += card.Value;
+            }
+        }
+
+        return cards.Values.Sum();
     }
 
     private IEnumerable<Card> ParseInput()
