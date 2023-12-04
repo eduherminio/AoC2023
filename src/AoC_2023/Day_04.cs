@@ -48,7 +48,7 @@ public class Day_04 : BaseDay
             var card = _input[cardIndex];
 
             var cardsWon = card.WinningNumbers.Intersect(card.CardNumbers).Count();
-            for (int i = cardIndex; i < card.Id + cardsWon; i++)
+            for (int i = card.Id; i < card.Id + cardsWon; i++)
             {
                 myCards[i] += myCards[cardIndex];
             }
