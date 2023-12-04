@@ -13,7 +13,7 @@ public class Day_04 : BaseDay
 
     public override ValueTask<string> Solve_1() => new($"{Solve_1_Original()}");
 
-    public override ValueTask<string> Solve_2() => new($"{Solve_2_Original()}");
+    public override ValueTask<string> Solve_2() => new($"{Solve_2_NoDictionary()}");
 
     public int Solve_1_Original()
     {
@@ -38,6 +38,29 @@ public class Day_04 : BaseDay
         return cards.Values.Sum();
     }
 
+    public int Solve_2_NoDictionary()
+    {
+        var myCards = new int[_input.Count];
+
+        for (int cardIndex = 0; cardIndex < myCards.Length; ++cardIndex)
+        {
+            ++myCards[cardIndex];
+            var card = _input[cardIndex];
+
+            var cardsWon = card.WinningNumbers.Intersect(card.CardNumbers).Count();
+            for (int i = cardIndex; i < card.Id + cardsWon; i++)
+            {
+                myCards[i] += myCards[cardIndex];
+            }
+        }
+
+        return myCards.Sum();
+    }
+
+    /// <summary>
+    /// We could avoid parsing the card id and replace its usage with array index + 1
+    /// </summary>
+    /// <returns></returns>
     private IEnumerable<Card> ParseInput()
     {
         char[] separators = [' ', ':'];
