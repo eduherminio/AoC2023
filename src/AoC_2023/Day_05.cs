@@ -31,7 +31,7 @@ public class Day_05 : BaseDay
 
     public override ValueTask<string> Solve_1() => new($"{Solve_1_Original()}");
 
-    public override ValueTask<string> Solve_2() => new($"{Solve_2_Original()}");
+    public override ValueTask<string> Solve_2() => new($"");
 
     public ulong Solve_1_Original()
     {
