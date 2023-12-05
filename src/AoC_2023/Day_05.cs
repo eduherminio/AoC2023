@@ -4,11 +4,11 @@ internal sealed record Map(ulong DestinationRangeStart, ulong SourceRangeStart, 
 {
     public ulong To(ulong seed)
     {
-        if(seed >= SourceRangeStart)
+        if (seed >= SourceRangeStart)
         {
             var diff = seed - SourceRangeStart;
 
-            if(diff < RangeLength)
+            if (diff < RangeLength)
             {
                 return DestinationRangeStart + diff;
             }
@@ -36,12 +36,23 @@ public class Day_05 : BaseDay
     public ulong Solve_1_Original()
     {
         return _input.InitialSeeds.Min(seed =>
-            _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).Last().Key));
+            _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key));
     }
 
     public ulong Solve_2_Original()
     {
-        return 0;
+        List<ulong> seeds = new List<ulong>(_input.InitialSeeds.Count * 1000);
+
+        for (int i = 0; i < _input.InitialSeeds.Count - 1; i += 2)
+        {
+            for (int j = 0; j < (int)_input.InitialSeeds[i + 1]; ++j)
+            {
+                seeds.Add(_input.InitialSeeds[i] + (ulong)j);
+            }
+        }
+
+        return seeds.Min(seed =>
+            _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key));
     }
 
     private Input ParseInput()
