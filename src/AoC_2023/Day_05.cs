@@ -39,7 +39,7 @@ public class Day_05 : BaseDay
             _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key));
     }
 
-    public ulong Solve_2_Original()
+    public ulong Solve_2_Original_NoArray()
     {
         List<ulong> seeds = new List<ulong>(_input.InitialSeeds.Count * 1000);
 
@@ -53,6 +53,79 @@ public class Day_05 : BaseDay
 
         return seeds.Min(seed =>
             _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key));
+    }
+
+    private static readonly object _lockObj = new object();
+
+    public ulong Solve_2_NoArray_Foreach()
+    {
+        IEnumerable<ulong> InitialSeeds()
+        {
+            for (int i = 0; i < _input.InitialSeeds.Count - 1; i += 2)
+            {
+                for (int j = 0; j < (int)_input.InitialSeeds[i + 1]; ++j)
+                {
+                    yield return _input.InitialSeeds[i] + (ulong)j;
+                }
+            }
+        }
+
+        ulong index = 0;
+        var minLocation = ulong.MaxValue;
+        foreach (var seed in InitialSeeds())
+        {
+            if(index % 100_000 == 0)
+            {
+                Console.WriteLine(index);
+            }
+
+            var location = _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key);
+            if (location < minLocation)
+            {
+                minLocation = location;
+            }
+            ++index;
+        }
+
+        return minLocation;
+    }
+
+    public ulong Solve_2_NoArray_ParallelForeach()
+    {
+        IEnumerable<ulong> InitialSeeds()
+        {
+            for (int i = 0; i < _input.InitialSeeds.Count - 1; i += 2)
+            {
+                for (int j = 0; j < (int)_input.InitialSeeds[i + 1]; ++j)
+                {
+                    yield return _input.InitialSeeds[i] + (ulong)j;
+                }
+            }
+        }
+
+        var minLocation = ulong.MaxValue;
+        ulong index = 0;
+
+        Parallel.ForEach(InitialSeeds(), seed =>
+        {
+            if (index % 100_000 == 0)
+            {
+                Console.WriteLine(index);
+            }
+
+            var location = _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key);
+            lock (_lockObj)
+            {
+                if (location < minLocation)
+                {
+                    minLocation = location;
+                }
+            }
+
+            Interlocked.Increment(ref index);
+        });
+
+        return minLocation;
     }
 
     private Input ParseInput()
