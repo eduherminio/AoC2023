@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace AoC_2023;
+﻿namespace AoC_2023;
 
 public class Day_06 : BaseDay
 {
@@ -11,36 +9,19 @@ public class Day_06 : BaseDay
         _input = ParseInput().ToList();
     }
 
-    public override ValueTask<string> Solve_1() => new($"{Solve_1_Original()}");
-
-    public override ValueTask<string> Solve_2() => new($"{Solve_2_Original()}");
-
-    public long Solve_1_Original()
+    public override ValueTask<string> Solve_1()
     {
         long result = 1;
+
         foreach (var (inputTime, inputDistance) in _input)
         {
-            int occurrences = 0;
-            for (int t = 0; t < inputTime; ++t)
-            {
-                var speed = t;
-                var time = inputTime - t;
-
-                var distance = speed * time;
-
-                if (distance > inputDistance)
-                {
-                    ++occurrences;
-                }
-            }
-
-            result *= occurrences;
+            result *= CountRecordsWithBinarySearch(inputTime, inputDistance);
         }
 
-        return result;
+        return new($"{result}");
     }
 
-    public long Solve_2_Original()
+    public override ValueTask<string> Solve_2()
     {
         string inputTimeString = "";
         string inputDistanceString = "";
@@ -53,6 +34,13 @@ public class Day_06 : BaseDay
         int inputTime = int.Parse(inputTimeString);
         long inputDistance = long.Parse(inputDistanceString);
 
+        var result = CountRecordsWithBinarySearch(inputTime, inputDistance);
+
+        return new($"{result}");
+    }
+
+    internal static long CountRecords(int inputTime, long inputDistance)
+    {
         long occurrences = 0;
 
         for (int t = 0; t < inputTime; ++t)
@@ -69,6 +57,60 @@ public class Day_06 : BaseDay
         }
 
         return occurrences;
+    }
+
+    internal static long CountRecordsWithEarlyBreak(int inputTime, long inputDistance, int tToStart = 1)
+    {
+        long occurrences = 0;
+
+        for (int t = tToStart; t < inputTime; ++t)
+        {
+            long speed = t;
+            var time = inputTime - t;
+
+            long distance = speed * time;
+
+            if (distance > inputDistance)
+            {
+                ++occurrences;
+            }
+            else if (occurrences > 0)
+            {
+                break;
+            }
+        }
+
+        return occurrences;
+    }
+
+    internal static long CountRecordsWithBinarySearch(int inputTime, long inputDistance)
+    {
+        var optimalT = inputTime / 2;
+
+        int start = 1;
+        int end = optimalT + 1;
+        int optimizedTimeWithoutRecord = 0;
+
+        while (true)
+        {
+            int time = (end - start) / 2;
+            if ((long)time * (inputTime - time) < inputDistance)
+            {
+                optimizedTimeWithoutRecord = time;
+                start = time;
+                end += time;
+            }
+            else if (optimizedTimeWithoutRecord > 0)
+            {
+                return CountRecordsWithEarlyBreak(inputTime, inputDistance, optimizedTimeWithoutRecord);
+            }
+            else
+            {
+                end = time;
+            }
+        }
+
+        throw new SolvingException();
     }
 
     private IEnumerable<(int Time, int Distance)> ParseInput()
