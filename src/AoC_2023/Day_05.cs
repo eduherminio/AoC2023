@@ -72,11 +72,12 @@ public class Day_05 : BaseDay
         int maxArrayLength = (int)Math.Min(max - min, Array.MaxLength);
         var arraysNeeded = 1 + ((int)((max - min) / maxArrayLength));
 
-        var currentArrays = new List<bool[]>(arraysNeeded);
+        var currentArrays = new bool[arraysNeeded][];
         for (int i = 0; i < arraysNeeded; i++)
         {
-            currentArrays.Add(new bool[maxArrayLength]);
+            currentArrays[i] = (new bool[maxArrayLength]);
         }
+
         foreach (var initialSeed in InitialSeeds())
         {
             var arrayIndex = (int)Math.DivRem(initialSeed, maxArrayLength, out var itemIndex);
@@ -85,10 +86,10 @@ public class Day_05 : BaseDay
 
         foreach (var mapLayer in _input.FromToMaps)
         {
-            var nextArrays = new List<bool[]>(arraysNeeded);
+            var nextArrays = new bool[arraysNeeded][];
             for (int i = 0; i < arraysNeeded; i++)
             {
-                nextArrays.Add(new bool[maxArrayLength]);
+                nextArrays[i] = (new bool[maxArrayLength]);
             }
 
             foreach (var map in mapLayer)
@@ -111,7 +112,7 @@ public class Day_05 : BaseDay
             }
 
             // Letting through those ones unaffected by the mapping layer
-            for (int arrayIndex = 0; arrayIndex < currentArrays.Count; ++arrayIndex)
+            for (int arrayIndex = 0; arrayIndex < currentArrays.Length; ++arrayIndex)
             {
                 for (int itemIndex = 0; itemIndex < currentArrays[arrayIndex].Length; ++itemIndex)
                 {
@@ -125,7 +126,7 @@ public class Day_05 : BaseDay
             currentArrays = nextArrays;
         }
 
-        for (int i = 0; i < currentArrays.Count; ++i)
+        for (int i = 0; i < currentArrays.Length; ++i)
         {
             for (int j = 0; j < currentArrays[i].Length; ++j)
             {
