@@ -4,18 +4,18 @@ using NUnit.Framework.Legacy;
 namespace AoC_2023.Test;
 public class Day_05Tests
 {
-    [TestCase(50ul, 98ul, 2ul, 98ul, 50ul)]
-    [TestCase(50ul, 98ul, 2ul, 99ul, 51ul)]
-    [TestCase(50ul, 98ul, 2ul, 97ul, 97ul)]
-    [TestCase(50ul, 98ul, 2ul, 100ul, 100ul)]
+    [TestCase(50L, 98L, 2L, 98L, 50L)]
+    [TestCase(50L, 98L, 2L, 99L, 51L)]
+    [TestCase(50L, 98L, 2L, 97L, 97L)]
+    [TestCase(50L, 98L, 2L, 100L, 100L)]
 
-    [TestCase(52ul, 50ul, 48ul, 53ul, 55ul)]
-    [TestCase(52ul, 50ul, 48ul, 49ul, 49ul)]
-    [TestCase(52ul, 50ul, 48ul, 50ul, 52ul)]
-    [TestCase(52ul, 50ul, 48ul, 51ul, 53ul)]
-    [TestCase(52ul, 50ul, 48ul, 96ul, 98ul)]
-    [TestCase(52ul, 50ul, 48ul, 97ul, 99ul)]
-    public void Map_To(ulong destinationRangeStart, ulong sourceRangeStart, ulong rangeLength, ulong from, ulong expectedTo)
+    [TestCase(52L, 50L, 48L, 53L, 55L)]
+    [TestCase(52L, 50L, 48L, 49L, 49L)]
+    [TestCase(52L, 50L, 48L, 50L, 52L)]
+    [TestCase(52L, 50L, 48L, 51L, 53L)]
+    [TestCase(52L, 50L, 48L, 96L, 98L)]
+    [TestCase(52L, 50L, 48L, 97L, 99L)]
+    public void Map_To(long destinationRangeStart, long sourceRangeStart, long rangeLength, long from, long expectedTo)
     {
         Map map = new(destinationRangeStart, sourceRangeStart, rangeLength);
 
