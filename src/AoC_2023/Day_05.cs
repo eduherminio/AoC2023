@@ -29,25 +29,24 @@ public class Day_05 : BaseDay
         _input = ParseInput();
     }
 
-    public override ValueTask<string> Solve_1() => new($"{Solve_1_Original()}");
-
-    public override ValueTask<string> Solve_2() => new($"{Solve_2_Original()}");
-
-    public long Solve_1_Original()
+    public override ValueTask<string> Solve_1()
     {
         // .OrderByDescending(g => g.Count()).Last(): Trick to being able to use LINQ,
         // providing there are at least 3 maps per layer and they don't overlap:
         // only one affects the seed and produces a different result
 
-        return _input.InitialSeeds.Min(seed =>
-            _input.FromToMaps.Aggregate(seed, (current, next) =>
-                next.GroupBy(m => m.To(current))
-                .OrderByDescending(g => g.Count())
-                .Last()
-                .Key));
+        var result =
+            _input.InitialSeeds.Min(seed =>
+                _input.FromToMaps.Aggregate(seed, (current, next) =>
+                    next.GroupBy(m => m.To(current))
+                    .OrderByDescending(g => g.Count())
+                    .Last()
+                    .Key));
+
+        return new($"{result}");
     }
 
-    public long Solve_2_Original()
+    public override ValueTask<string> Solve_2()
     {
         var min = long.MaxValue;
         var max = 0L;
@@ -78,10 +77,16 @@ public class Day_05 : BaseDay
             currentArrays[i] = (new bool[maxArrayLength]);
         }
 
-        foreach (var initialSeed in InitialSeeds())
+        // Initial seeds expansion
+        for (int i = 0; i < _input.InitialSeeds.Count - 1; i += 2)
         {
-            var arrayIndex = (int)Math.DivRem(initialSeed, maxArrayLength, out var itemIndex);
-            currentArrays[arrayIndex][itemIndex] = true;
+            for (int j = 0; j < (int)_input.InitialSeeds[i + 1]; ++j)
+            {
+                var initialSeed = _input.InitialSeeds[i] + j;
+
+                var arrayIndex = (int)Math.DivRem(initialSeed, maxArrayLength, out var itemIndex);
+                currentArrays[arrayIndex][itemIndex] = true;
+            }
         }
 
         foreach (var mapLayer in _input.FromToMaps)
@@ -132,23 +137,14 @@ public class Day_05 : BaseDay
             {
                 if (currentArrays[i][j])
                 {
-                    return (i * (long)maxArrayLength) + j;
+                    var result = (i * (long)maxArrayLength) + j;
+
+                    return new($"{result}");
                 }
             }
         }
 
         throw new SolvingException();
-
-        IEnumerable<long> InitialSeeds()
-        {
-            for (int i = 0; i < _input.InitialSeeds.Count - 1; i += 2)
-            {
-                for (int j = 0; j < (int)_input.InitialSeeds[i + 1]; ++j)
-                {
-                    yield return _input.InitialSeeds[i] + j;
-                }
-            }
-        }
     }
 
     private Input ParseInput()
