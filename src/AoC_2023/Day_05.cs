@@ -99,7 +99,8 @@ public class Day_05 : BaseDay
 
             foreach (var map in mapLayer)
             {
-                for (var i = map.SourceRangeStart; i < map.SourceRangeStart + map.RangeLength; ++i)
+                // Since there's no overlap between maps of the same layer
+                Parallel.For(map.SourceRangeStart, map.SourceRangeStart + map.RangeLength, (i) =>
                 {
                     var currentArrayIndex = (int)Math.DivRem(i, maxArrayLength, out var currentItemIndex);
 
@@ -113,7 +114,7 @@ public class Day_05 : BaseDay
 
                         nextArrays[nextArrayIndex][nextItemIndex] = true;
                     }
-                }
+                });
             }
 
             // Letting through those ones unaffected by the mapping layer
