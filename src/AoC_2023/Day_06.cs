@@ -85,6 +85,15 @@ public class Day_06 : BaseDay
 
     internal static long CountRecordsWithBinarySearch(int inputTime, long inputDistance)
     {
+        // y = x(inputTime - x)
+        // y = x(inputTime) - x^2
+
+        // Los puntos máximo y mínimo están en los extremos o en las raíces obtenidas de igualar la derivada a 0
+        // dy = inputTime - 2x
+        // dy = 0 -> inputTime = 2x -> x = inputTime/2
+
+        // Los extremos son 0, así que no pueden ser el máximo, ergo inputTime/2 tiene que serlo
+
         var optimalT = inputTime / 2;
 
         int start = 1;
