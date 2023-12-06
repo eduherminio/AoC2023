@@ -40,12 +40,35 @@ public class Day_06 : BaseDay
         return result;
     }
 
-    public int Solve_2_Original()
+    public long Solve_2_Original()
     {
-        int result = 0;
+        string inputTimeString = "";
+        string inputDistanceString = "";
+        foreach (var (time, distance) in _input)
+        {
+            inputTimeString += time.ToString();
+            inputDistanceString += distance.ToString();
+        }
 
+        int inputTime = int.Parse(inputTimeString);
+        long inputDistance = long.Parse(inputDistanceString);
 
-        return result;
+        long occurrences = 0;
+
+        for (int t = 0; t < inputTime; ++t)
+        {
+            long speed = t;
+            var time = inputTime - t;
+
+            long distance = speed * time;
+
+            if (distance > inputDistance)
+            {
+                ++occurrences;
+            }
+        }
+
+        return occurrences;
     }
 
     private IEnumerable<(int Time, int Distance)> ParseInput()
