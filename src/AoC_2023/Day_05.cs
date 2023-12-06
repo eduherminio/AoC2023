@@ -35,8 +35,16 @@ public class Day_05 : BaseDay
 
     public long Solve_1_Original()
     {
+        // .OrderByDescending(g => g.Count()).Last(): Trick to being able to use LINQ,
+        // providing there are at least 3 maps per layer and they don't overlap:
+        // only one affects the seed and produces a different result
+
         return _input.InitialSeeds.Min(seed =>
-            _input.FromToMaps.Aggregate(seed, (current, next) => next.GroupBy(m => m.To(current)).OrderByDescending(g => g.Count()).Last().Key));
+            _input.FromToMaps.Aggregate(seed, (current, next) =>
+                next.GroupBy(m => m.To(current))
+                .OrderByDescending(g => g.Count())
+                .Last()
+                .Key));
     }
 
     public long Solve_2_Original()
