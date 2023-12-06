@@ -120,13 +120,13 @@ public class Day_05 : BaseDay
             // Letting through those ones unaffected by the mapping layer
             for (int arrayIndex = 0; arrayIndex < currentArrays.Length; ++arrayIndex)
             {
-                for (int itemIndex = 0; itemIndex < currentArrays[arrayIndex].Length; ++itemIndex)
+                Parallel.For(0, currentArrays[arrayIndex].Length, (itemIndex) =>
                 {
                     if (currentArrays[arrayIndex][itemIndex])
                     {
                         nextArrays[arrayIndex][itemIndex] = true;
                     }
-                }
+                });
             }
 
             currentArrays = nextArrays;
