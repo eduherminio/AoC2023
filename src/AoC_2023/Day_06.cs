@@ -15,7 +15,7 @@ public class Day_06 : BaseDay
 
         foreach (var (inputTime, inputDistance) in _input)
         {
-            result *= CountRecordsWithBinarySearch(inputTime, inputDistance);
+            result *= CountRecordsSolvingQuadraticEcuation(inputTime, inputDistance);
         }
 
         return new($"{result}");
@@ -34,7 +34,7 @@ public class Day_06 : BaseDay
         int inputTime = int.Parse(inputTimeString);
         long inputDistance = long.Parse(inputDistanceString);
 
-        var result = CountRecordsWithBinarySearch(inputTime, inputDistance);
+        var result = CountRecordsSolvingQuadraticEcuation(inputTime, inputDistance);
 
         return new($"{result}");
     }
@@ -120,6 +120,30 @@ public class Day_06 : BaseDay
         }
 
         throw new SolvingException();
+    }
+
+    internal static long CountRecordsSolvingQuadraticEcuation(int inputTime, long inputDistance)
+    {
+        // y = x(inputTime - x)
+        // y = x(inputTime) - x^2
+
+        // -x^2 + inputTime * x - y = 0, with y = inputDistance
+        // a = -1, b = inputTime, c = -inputDistance
+        // x = (-b +- Math.Sqrt(b^2 - 4 * a * c)) / 2 * a)
+
+        var t1WhenRecord = (-inputTime + Math.Sqrt(((double)inputTime * inputTime) - (4 * (-1) * (-inputDistance)))) / (2 * (-1));
+        var t2WhenRecord = (-inputTime - Math.Sqrt(((double)inputTime * inputTime) - (4 * (-1) * (-inputDistance)))) / (2 * (-1));
+
+        const double delta = 0.00000001;    // Matching the records isn't enough, in case t1 and t2 are integers
+
+        if (t1WhenRecord < t2WhenRecord)
+        {
+            return (int)Math.Floor(t2WhenRecord - delta) - (int)Math.Ceiling(t1WhenRecord + delta) + 1;
+        }
+        else
+        {
+            return (int)Math.Floor(t1WhenRecord - delta) - (int)Math.Ceiling(t2WhenRecord + delta) + 1;
+        }
     }
 
     private IEnumerable<(int Time, int Distance)> ParseInput()
