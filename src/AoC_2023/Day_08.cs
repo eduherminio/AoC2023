@@ -11,18 +11,18 @@ public partial class Day_08 : BaseDay
 
     private sealed record BinaryTreeNode
     {
-        public string Id { get; }
-
         public BinaryTreeNode Left { get; set; } = null!;
 
         public BinaryTreeNode Right { get; set; } = null!;
+
+        public bool IsEndNodePart1 { get; }
 
         public bool IsEndNodePart2 { get; }
 
         public BinaryTreeNode(string id)
         {
-            Id = id;
-            IsEndNodePart2 = Id[^1] == 'Z';
+            IsEndNodePart1 = id == "ZZZ";
+            IsEndNodePart2 = id[^1] == 'Z';
         }
     }
 
@@ -36,7 +36,6 @@ public partial class Day_08 : BaseDay
     public override ValueTask<string> Solve_1()
     {
         const string start = "AAA";
-        const string end = "ZZZ";
 
         int counter = 0;
         BinaryTreeNode currentNode = _input.Nodes[start];
@@ -50,7 +49,7 @@ public partial class Day_08 : BaseDay
                 _ => throw new SolvingException()
             };
 
-            if (currentNode.Id == end)
+            if (currentNode.IsEndNodePart1)
             {
                 return new($"{counter}");
             }
@@ -60,17 +59,12 @@ public partial class Day_08 : BaseDay
     public override ValueTask<string> Solve_2()
     {
         var startNodeList = new List<BinaryTreeNode>(_input.Nodes.Count);
-        var endNodeList = new List<BinaryTreeNode>(_input.Nodes.Count);
 
         foreach (var node in _input.Nodes)
         {
             if (node.Key[^1] == 'A')
             {
                 startNodeList.Add(node.Value);
-            }
-            else if (node.Key[^1] == 'Z')
-            {
-                endNodeList.Add(node.Value);
             }
         }
 
