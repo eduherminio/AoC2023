@@ -9,17 +9,24 @@ public partial class Day_08 : BaseDay
 
     private readonly Regex _nodeRegex = NodeRegex();
 
-    private sealed record BinaryTreeNode(string Id)
+    private sealed record BinaryTreeNode
     {
+        public string Id { get; }
+
         public BinaryTreeNode Left { get; set; } = null!;
 
         public BinaryTreeNode Right { get; set; } = null!;
+
+        public bool IsEndNodePart2 { get; }
+
+        public BinaryTreeNode(string id)
+        {
+            Id = id;
+            IsEndNodePart2 = Id[^1] == 'Z';
+        }
     }
 
-    private readonly (string Instructions, BinaryTreeNode Root) _input;
-
-    const string Start = "AAA";
-    const string End = "ZZZ";
+    private readonly (string Instructions, Dictionary<string, BinaryTreeNode> Nodes) _input;
 
     public Day_08()
     {
@@ -32,8 +39,11 @@ public partial class Day_08 : BaseDay
 
     public int Solve_1_Original()
     {
+        const string start = "AAA";
+        const string end = "ZZZ";
+
         int counter = 0;
-        BinaryTreeNode currentNode = _input.Root;
+        BinaryTreeNode currentNode = _input.Nodes[start];
 
         while (true)
         {
@@ -44,21 +54,64 @@ public partial class Day_08 : BaseDay
                 _ => throw new SolvingException()
             };
 
-            if (currentNode.Id == End)
+            if (currentNode.Id == end)
             {
                 return counter;
             }
         }
     }
 
-    public int Solve_2_Original()
+    public ulong Solve_2_Original()
     {
-        int result = 0;
+        var startNodeList = new List<BinaryTreeNode>(_input.Nodes.Count);
+        var endNodeList = new List<BinaryTreeNode>(_input.Nodes.Count);
 
-        return result;
+        foreach (var node in _input.Nodes)
+        {
+            if (node.Key[^1] == 'A')
+            {
+                startNodeList.Add(node.Value);
+            }
+            else if (node.Key[^1] == 'Z')
+            {
+                endNodeList.Add(node.Value);
+            }
+        }
+
+        var currentNodeArray = startNodeList.ToArray();
+        var repetitionPeriodAfterEnd = new ulong[currentNodeArray.Length];
+
+        ulong counter = 0;
+
+        bool finish = false;
+        while (!finish)
+        {
+            var instruction = _input.Instructions[(int)(counter++ % (ulong)_input.Instructions.Length)];
+            finish = repetitionPeriodAfterEnd.All(p => p != default);
+
+            Parallel.For(0, currentNodeArray.Length, (i) =>
+            {
+                currentNodeArray[i] = instruction switch
+                {
+                    'L' => currentNodeArray[i].Left,
+                    'R' => currentNodeArray[i].Right,
+                    _ => throw new SolvingException()
+                };
+
+                if (currentNodeArray[i].IsEndNodePart2
+                    && (repetitionPeriodAfterEnd[i] == 0    // Initial iteration, to avoid dividing by 0
+                        || (counter - repetitionPeriodAfterEnd[i]) % repetitionPeriodAfterEnd[i] != 0))
+                {
+                    repetitionPeriodAfterEnd[i] = counter - repetitionPeriodAfterEnd[i];
+                    finish = false;
+                }
+            });
+        }
+
+        return SheepTools.Maths.LeastCommonMultiple(repetitionPeriodAfterEnd);
     }
 
-    private (string, BinaryTreeNode) ParseInput()
+    private (string, Dictionary<string, BinaryTreeNode>) ParseInput()
     {
         var allGroupsOfLines = ParsedFile.ReadAllGroupsOfLines(InputFilePath);
         if (allGroupsOfLines[0].Count != 1)
@@ -96,6 +149,6 @@ public partial class Day_08 : BaseDay
             node.Right = rightNode;
         }
 
-        return (allGroupsOfLines[0][0], nodes[Start]);
+        return (allGroupsOfLines[0][0], nodes);
     }
 }
