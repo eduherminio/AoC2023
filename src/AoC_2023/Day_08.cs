@@ -7,8 +7,6 @@ public partial class Day_08 : BaseDay
     [GeneratedRegex(@"(?<Node>\w*(?=\s=)).*(?<Left>(?<=\()\w*(?=,)).*(?<Right>(?<=\s)\w*(?=\)))\)")]
     private static partial Regex NodeRegex();
 
-    private readonly Regex _nodeRegex = NodeRegex();
-
     private sealed record BinaryTreeNode
     {
         public BinaryTreeNode Left { get; set; } = null!;
@@ -115,9 +113,10 @@ public partial class Day_08 : BaseDay
 
         foreach (var line in allGroupsOfLines[1])
         {
-            var nodeId = _nodeRegex.Match(line).Groups["Node"].Value;
-            var left = _nodeRegex.Match(line).Groups["Left"].Value;
-            var right = _nodeRegex.Match(line).Groups["Right"].Value;
+            var regexMatch = NodeRegex().Match(line);
+            var nodeId = regexMatch.Groups["Node"].Value;
+            var left = regexMatch.Groups["Left"].Value;
+            var right = regexMatch.Groups["Right"].Value;
 
             if (!nodes.TryGetValue(nodeId, out var node))
             {

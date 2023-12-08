@@ -16,11 +16,6 @@ public partial class Day_02 : BaseDay
     [GeneratedRegex(@"\d*(?=\sgreen)")]
     private static partial Regex GreenRegex();
 
-    private readonly Regex _gameRegex = GameRegex();
-    private readonly Regex _blueRegex = BlueRegex();
-    private readonly Regex _redRegex = RedRegex();
-    private readonly Regex _greenRegex = GreenRegex();
-
     private sealed record CubeSet(int Red, int Green, int Blue);
 
     private sealed record Game(int Id, List<CubeSet> CubeSets);
@@ -128,24 +123,24 @@ public partial class Day_02 : BaseDay
             var line = file.NextLine();
 
             var firstItem = line.NextElement<string>();
-            var gameNumber = int.Parse(_gameRegex.Match(firstItem).Value);
+            var gameNumber = int.Parse(GameRegex().Match(firstItem).Value);
             var cubeSetList = new List<CubeSet>(128);
 
             while (!line.Empty)
             {
                 var setString = line.NextElement<string>();
 
-                if (!int.TryParse(_redRegex.Match(setString).ValueSpan, out var redCount))
+                if (!int.TryParse(RedRegex().Match(setString).ValueSpan, out var redCount))
                 {
                     redCount = 0;
                 }
 
-                if (!int.TryParse(_greenRegex.Match(setString).ValueSpan, out var greenCount))
+                if (!int.TryParse(GreenRegex().Match(setString).ValueSpan, out var greenCount))
                 {
                     greenCount = 0;
                 }
 
-                if (!int.TryParse(_blueRegex.Match(setString).ValueSpan, out var blueCount))
+                if (!int.TryParse(BlueRegex().Match(setString).ValueSpan, out var blueCount))
                 {
                     blueCount = 0;
                 }
