@@ -89,7 +89,7 @@ public partial class Day_08 : BaseDay
             var instruction = _input.Instructions[(int)(counter++ % (ulong)_input.Instructions.Length)];
             finish = repetitionPeriodAfterEnd.All(p => p != default);
 
-            Parallel.For(0, currentNodeArray.Length, (i) =>
+            for (int i = 0; i < currentNodeArray.Length; ++i)
             {
                 currentNodeArray[i] = instruction switch
                 {
@@ -105,7 +105,7 @@ public partial class Day_08 : BaseDay
                     repetitionPeriodAfterEnd[i] = counter - repetitionPeriodAfterEnd[i];
                     finish = false;
                 }
-            });
+            }
         }
 
         return SheepTools.Maths.LeastCommonMultiple(repetitionPeriodAfterEnd);
