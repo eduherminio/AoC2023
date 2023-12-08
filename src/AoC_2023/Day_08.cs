@@ -33,11 +33,7 @@ public partial class Day_08 : BaseDay
         _input = ParseInput();
     }
 
-    public override ValueTask<string> Solve_1() => new($"{Solve_1_Original()}");
-
-    public override ValueTask<string> Solve_2() => new($"{Solve_2_Original()}");
-
-    public int Solve_1_Original()
+    public override ValueTask<string> Solve_1()
     {
         const string start = "AAA";
         const string end = "ZZZ";
@@ -56,12 +52,12 @@ public partial class Day_08 : BaseDay
 
             if (currentNode.Id == end)
             {
-                return counter;
+                return new($"{counter}");
             }
         }
     }
 
-    public ulong Solve_2_Original()
+    public override ValueTask<string> Solve_2()
     {
         var startNodeList = new List<BinaryTreeNode>(_input.Nodes.Count);
         var endNodeList = new List<BinaryTreeNode>(_input.Nodes.Count);
@@ -108,7 +104,9 @@ public partial class Day_08 : BaseDay
             }
         }
 
-        return SheepTools.Maths.LeastCommonMultiple(repetitionPeriodAfterEnd);
+        var result = SheepTools.Maths.LeastCommonMultiple(repetitionPeriodAfterEnd);
+
+        return new($"{result}");
     }
 
     private (string, Dictionary<string, BinaryTreeNode>) ParseInput()
