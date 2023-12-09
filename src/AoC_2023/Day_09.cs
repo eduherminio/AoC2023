@@ -2,7 +2,7 @@
 
 public class Day_09 : BaseDay
 {
-    private readonly List<List<long>> _input;
+    private readonly List<List<int>> _input;
 
     public Day_09()
     {
@@ -11,13 +11,13 @@ public class Day_09 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        long result = 0;
+        int result = 0;
 
         foreach (var input in _input)
         {
-            List<List<long>> sequences = ReduceToZero(input);
+            var sequences = ReduceToZero(input);
 
-            long prediction = 0;
+            int prediction = 0;
             for (int i = 0; i < sequences.Count; i++)
             {
                 prediction += sequences[i][^1];
@@ -31,23 +31,18 @@ public class Day_09 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        long result = 0;
+        int result = 0;
 
         foreach (var input in _input)
         {
-            List<List<long>> sequences = ReduceToZero(input);
+            var sequences = ReduceToZero(input);
 
-            long prediction = sequences[0][0];
+            int prediction = sequences[0][0];
             for (int i = 1; i < sequences.Count; i++)
             {
-                if (i % 2 == 1)
-                {
-                    prediction -= sequences[i][0];
-                }
-                else
-                {
-                    prediction += sequences[i][0];
-                }
+                prediction += (i % 2 == 0)
+                    ? sequences[i][0]
+                    : -sequences[i][0];
             }
 
             result += prediction;
@@ -56,15 +51,15 @@ public class Day_09 : BaseDay
         return new($"{result}");
     }
 
-    private static List<List<long>> ReduceToZero(List<long> input)
+    private static List<List<int>> ReduceToZero(List<int> input)
     {
-        List<List<long>> sequences = new(input.Count) { new(input) };
+        List<List<int>> sequences = new(input.Count) { new(input) };
 
         while (true)
         {
             var allZeros = true;
-            List<long> lastSequence = sequences[^1];
-            List<long> sequence = new(lastSequence.Count - 1);
+            List<int> lastSequence = sequences[^1];
+            List<int> sequence = new(lastSequence.Count - 1);
 
             for (int i = 0; i < lastSequence.Count - 1; i++)
             {
@@ -88,12 +83,13 @@ public class Day_09 : BaseDay
         return sequences;
     }
 
-    private IEnumerable<List<long>> ParseInput()
+    private IEnumerable<List<int>> ParseInput()
     {
         var file = new ParsedFile(InputFilePath);
+
         while (!file.Empty)
         {
-            yield return file.NextLine().ToList<long>();
+            yield return file.NextLine().ToList<int>();
         }
     }
 }
