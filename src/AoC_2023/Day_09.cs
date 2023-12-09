@@ -15,15 +15,10 @@ public class Day_09 : BaseDay
 
         foreach (var input in _input)
         {
-            var sequences = ReduceToZero(input);
-
-            int prediction = 0;
-            for (int i = 0; i < sequences.Count; i++)
+            foreach (var sequence in ReduceToZero(input))
             {
-                prediction += sequences[i][^1];
+                result += sequence[^1];
             }
-
-            result += prediction;
         }
 
         return new($"{result}");
@@ -40,7 +35,7 @@ public class Day_09 : BaseDay
             int prediction = sequences[0][0];
             for (int i = 1; i < sequences.Count; i++)
             {
-                prediction += (i % 2 == 0)
+                result += (i % 2 == 0)
                     ? sequences[i][0]
                     : -sequences[i][0];
             }
