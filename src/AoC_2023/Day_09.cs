@@ -32,15 +32,12 @@ public class Day_09 : BaseDay
         {
             var sequences = ReduceToZero(input);
 
-            int prediction = sequences[0][0];
-            for (int i = 1; i < sequences.Count; i++)
+            for (int i = 0; i < sequences.Count; i++)
             {
-                result += (i % 2 == 0)
-                    ? sequences[i][0]
-                    : -sequences[i][0];
+                result += (i % 2 == 1)
+                    ? -sequences[i][0]
+                    : sequences[i][0];
             }
-
-            result += prediction;
         }
 
         return new($"{result}");
