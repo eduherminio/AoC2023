@@ -2,7 +2,7 @@
 
 public class Day_09 : BaseDay
 {
-    private readonly List<List<int>> _input;
+    private readonly List<List<List<int>>> _input;
 
     public Day_09()
     {
@@ -13,9 +13,9 @@ public class Day_09 : BaseDay
     {
         int result = 0;
 
-        foreach (var input in _input)
+        foreach (var sequences in _input)
         {
-            foreach (var sequence in ReduceToZero(input))
+            foreach (var sequence in sequences)
             {
                 result += sequence[^1];
             }
@@ -28,10 +28,8 @@ public class Day_09 : BaseDay
     {
         int result = 0;
 
-        foreach (var input in _input)
+        foreach (var sequences in _input)
         {
-            var sequences = ReduceToZero(input);
-
             for (int i = 0; i < sequences.Count; i++)
             {
                 result += (i % 2 == 1)
@@ -45,7 +43,7 @@ public class Day_09 : BaseDay
 
     private static List<List<int>> ReduceToZero(List<int> input)
     {
-        List<List<int>> sequences = new(input.Count) { new(input) };
+        List<List<int>> sequences = new(input.Count) { input };
 
         while (true)
         {
@@ -75,13 +73,13 @@ public class Day_09 : BaseDay
         return sequences;
     }
 
-    private IEnumerable<List<int>> ParseInput()
+    private IEnumerable<List<List<int>>> ParseInput()
     {
         var file = new ParsedFile(InputFilePath);
 
         while (!file.Empty)
         {
-            yield return file.NextLine().ToList<int>();
+            yield return ReduceToZero(file.NextLine().ToList<int>());
         }
     }
 }
