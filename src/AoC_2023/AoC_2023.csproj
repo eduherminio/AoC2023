@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AoCHelper" Version="3.0.0" />
+    <PackageReference Include="AoCHelper" Version="3.1.0" />
     <PackageReference Include="FileParser" Version="3.0.0-alpha.1" />
     <PackageReference Include="morelinq" Version="4.0.0" />
     <PackageReference Include="SheepTools" Version="0.13.0" />
