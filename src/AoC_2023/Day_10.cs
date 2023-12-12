@@ -53,14 +53,12 @@ public class Day_10 : BaseDay
     }
 
     private readonly List<List<PipeNode>> _input;
+    private HashSet<PipeNode> _mainPipe;
 
     public Day_10()
     {
         _input = ParseInput().ToList();
-    }
 
-    public override ValueTask<string> Solve_1()
-    {
         var start = FindStartPipeNodeAndAdjacents();
 
         // BFS
@@ -95,10 +93,14 @@ public class Day_10 : BaseDay
                 }
             }
         }
-
-         int result = expanded[currentNode].Count / 2;
-
         // PrintPipes(expanded, currentNode);
+
+        _mainPipe = expanded[currentNode].ToHashSet();
+    }
+
+    public override ValueTask<string> Solve_1()
+    {
+        int result = _mainPipe.Count / 2;
 
         return new($"{result}");
     }
@@ -107,7 +109,7 @@ public class Day_10 : BaseDay
     {
         for (int y = 0; y < _input.Count; ++y)
         {
-            for (int x = 0; x < _input.Count; ++x)
+            for (int x = 0; x < _input[0].Count; ++x)
             {
                 var pipeNode = _input[y][x];
 
@@ -154,7 +156,61 @@ public class Day_10 : BaseDay
     {
         int result = 0;
 
+        result = CalculateArea();
+
         return new($"{result}");
+    }
+
+    internal int CalculateArea()
+    {
+        int result = 0;
+        var minY = _mainPipe.Min(x => x.Y);
+        var maxY = _mainPipe.Max(x => x.Y);
+        var minX = _mainPipe.Min(x => x.X);
+        var maxX = _mainPipe.Max(x => x.X);
+
+        for (int y = minY; y < maxY; ++y)
+        {
+            bool xIsInside = false;
+            for (int x = minX; x < maxX; ++x)
+            {
+                if (_input[y][x].IsPipe() && _mainPipe.Contains(_input[y][x]))
+                {
+                    if (!xIsInside)
+                    {
+                        xIsInside = true;
+                    }
+                    else
+                    {
+                        if (_input[y][x].Value != '-')
+                        {
+                            xIsInside ^= true;
+                        }
+                        //if (x + 1 < maxX)
+                        //{
+                        //    var next = _input[y][x + 1];
+                        //    if (next.IsPipe() && _mainPipe.Contains(next))
+                        //    {
+                        //        if (_input[y][x].Value != '-')
+                        //        {
+                        //            xIsInside ^= true;
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        xIsInside = false;
+                        //    }
+                        //}
+                    }
+                }
+                else if (xIsInside)
+                {
+                    ++result;
+                }
+            }
+        }
+
+        return result;
     }
 
     private IEnumerable<List<PipeNode>> ParseInput()

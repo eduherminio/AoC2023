@@ -11,4 +11,15 @@
     <ProjectReference Include="..\..\src\AoC_2023\AoC_2023.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Update="TestInputs\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestInputs\" />
+  </ItemGroup>
+
 </Project>
