@@ -1,4 +1,5 @@
-﻿using SheepTools.Model;
+﻿using SheepTools.Extensions;
+using SheepTools.Model;
 using Spectre.Console;
 
 namespace AoC_2023;
@@ -9,7 +10,7 @@ public class Day_10 : BaseDay
     {
         public char Value { get; }
 
-        public PipeNode Parent { get; set; }
+        public PipeNode? Parent { get; set; }
 
         public List<Direction> ConnectionsDirections { get; set; }
 
@@ -78,7 +79,7 @@ public class Day_10 : BaseDay
                 : expanded[currentNode.Parent!];
 
             var currentSolution = previousSolution.Append(currentNode).ToList();
-            expanded.Add(currentNode, currentSolution);
+            expanded.TryAdd(currentNode, currentSolution);
 
             if (currentNode == start)
             {
@@ -95,39 +96,11 @@ public class Day_10 : BaseDay
             }
         }
 
-        int result = expanded[currentNode].Count / 2;
+         int result = expanded[currentNode].Count / 2;
 
-        PrintPipes(expanded, currentNode);
+        // PrintPipes(expanded, currentNode);
 
         return new($"{result}");
-    }
-
-    private void PrintPipes(Dictionary<PipeNode, List<PipeNode>> expanded, PipeNode currentNode)
-    {
-        int index = 0;
-
-        var minY = expanded[currentNode].Min(x => x.Y);// - 3;
-        var maxY = expanded[currentNode].Max(x => x.Y) + 1;
-        var minX = expanded[currentNode].Min(x => x.X);// - 3;
-        var maxX = expanded[currentNode].Max(x => x.X) + 1;
-        for (int y = minY; y < maxY; ++y)
-        {
-            for (int x = minX; x < maxX; ++x)
-            {
-                if (expanded[currentNode].Contains(_input[y][x]))
-                {
-                    //Console.Write(index++);
-                    Console.Write(expanded[currentNode].IndexOf(_input[y][x]).ToString("000"));
-                }
-                else
-                {
-                    Console.Write("...");
-                }
-                Console.Write(' ');
-            }
-
-            Console.WriteLine();
-        }
     }
 
     private PipeNode FindStartPipeNodeAndAdjacents()
@@ -140,7 +113,11 @@ public class Day_10 : BaseDay
 
                 if (pipeNode.IsStart())
                 {
-                    pipeNode.Connections.AddRange(ExtractPipesNodesAround(pipeNode));
+                    pipeNode.Connections.AddRange(ExtractPipesNodesAround(pipeNode, lookingForStart: true));
+
+                    pipeNode.ConnectionsDirections.AddRange(pipeNode.Connections
+                        .Select(neighbour =>
+                            neighbour.ConnectionsDirections.Single(d => neighbour.Move(d) == pipeNode).Opposite()));
 
                     return pipeNode;
                 }
@@ -150,7 +127,7 @@ public class Day_10 : BaseDay
         throw new SolvingException();
     }
 
-    private IEnumerable<PipeNode> ExtractPipesNodesAround(PipeNode pipeNode)
+    private IEnumerable<PipeNode> ExtractPipesNodesAround(PipeNode pipeNode, bool lookingForStart)
     {
         return
             (new[]{
@@ -163,13 +140,13 @@ public class Day_10 : BaseDay
                 && intPoint.Y == Math.Clamp(intPoint.Y, 0, _input.Count - 1))
             .Select(intPoint => _input[intPoint.Y][intPoint.X])
             .Where(pipelineAround =>
-                pipelineAround.IsStart()
+                (lookingForStart && pipelineAround.IsStart())
                 || pipelineAround.ConnectionsDirections.Any(d => pipelineAround.Move(d) == pipeNode));
     }
 
     private IEnumerable<PipeNode> ExtractPipesNodesAroundExcludingPreviousOne(PipeNode pipeNode, PipeNode previousOne)
     {
-        return ExtractPipesNodesAround(pipeNode)
+        return ExtractPipesNodesAround(pipeNode, lookingForStart: false)
             .Where(pipeNode => pipeNode != previousOne);
     }
 
@@ -198,6 +175,35 @@ public class Day_10 : BaseDay
 
             y++;
             yield return returnLine;
+        }
+    }
+
+    private void PrintPipes(Dictionary<PipeNode, List<PipeNode>> expanded, PipeNode currentNode)
+    {
+        // int index = 0;
+
+        var minY = expanded[currentNode].Min(x => x.Y);// - 3;
+        var maxY = expanded[currentNode].Max(x => x.Y) + 1;
+        var minX = expanded[currentNode].Min(x => x.X);// - 3;
+        var maxX = expanded[currentNode].Max(x => x.X) + 1;
+        for (int y = minY; y < maxY; ++y)
+        {
+            for (int x = minX; x < maxX; ++x)
+            {
+                if (expanded[currentNode].Contains(_input[y][x]))
+                {
+                    //Console.Write(index++);
+                    //Console.Write(expanded[currentNode].IndexOf(_input[y][x]).ToString("000"));
+                    Console.Write(_input[y][x].Value);
+                }
+                else
+                {
+                    Console.Write("...");
+                }
+                Console.Write(' ');
+            }
+
+            Console.WriteLine();
         }
     }
 }
