@@ -20,9 +20,38 @@ public class Day_12 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
+        int result = Solve(_input);
+
+        return new($"{result}");
+    }
+
+    public override ValueTask<string> Solve_2()
+    {
+        var newInput = _input.ConvertAll(row =>
+        {
+            var newRow = row with {
+                Records = $"{row.Records}?{row.Records}?{row.Records}?{row.Records}?{row.Records}",
+                Conditions = [.. row.Conditions.ToList()]
+            };
+
+            newRow.Conditions.AddRange(row.Conditions);
+            newRow.Conditions.AddRange(row.Conditions);
+            newRow.Conditions.AddRange(row.Conditions);
+            newRow.Conditions.AddRange(row.Conditions);
+
+            return newRow;
+        });
+
+        int result = Solve(newInput);
+
+        return new($"{result}");
+    }
+
+    private static int Solve(List<Row> input)
+    {
         int result = 0;
 
-        foreach (Row row in _input)
+        foreach (Row row in input)
         {
             List<int> unknownIndexes = new(row.Records.Length);
 
@@ -104,7 +133,7 @@ public class Day_12 : BaseDay
             //Console.WriteLine(result);
         }
 
-        return new($"{result}");
+        return result;
     }
 
     private static List<string> ExtractPossibilities(Row row, int unknownPositionsCount)
@@ -140,13 +169,6 @@ public class Day_12 : BaseDay
         }
         //Console.WriteLine();
         return possibilities;
-    }
-
-    public override ValueTask<string> Solve_2()
-    {
-        int result = 0;
-
-        return new($"{result}");
     }
 
     private IEnumerable<Row> ParseInput()
