@@ -23,11 +23,11 @@ public class Day_11 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        ExpandUniverse();
+        var expandedInput = ExpandUniverse([.. _input.ConvertAll(l => l.ToList())]);
 
         // Print(_input);
 
-        var galaxies = ExtractGalaxies();
+        var galaxies = ExtractGalaxies(expandedInput);
 
         int result = 0;
         foreach (var subset in galaxies.Subsets(2))
@@ -38,17 +38,34 @@ public class Day_11 : BaseDay
         return new($"{result}");
     }
 
-    private void ExpandUniverse()
+    public override ValueTask<string> Solve_2()
     {
-        List<int> yGaps = new(_input.Count);
-        List<int> xGaps = new(_input[0].Count);
+        var expandedInput = ExpandUniverse_Part2([.. _input.ConvertAll(l => l.ToList())]);
 
-        for (int y = 0; y < _input.Count; ++y)
+        // Print(expandedInput);
+
+        var galaxies = ExtractGalaxies(expandedInput);
+
+        int result = 0;
+        foreach (var subset in galaxies.Subsets(2))
+        {
+            result += (int)subset[0].ManhattanDistance(subset[1]);
+        }
+
+        return new($"{result}");
+    }
+
+    private static List<List<Point>> ExpandUniverse(List<List<Point>> universe)
+    {
+        List<int> yGaps = new(universe.Count);
+        List<int> xGaps = new(universe[0].Count);
+
+        for (int y = 0; y < universe.Count; ++y)
         {
             bool isGalaxy = false;
-            for (int x = 0; x < _input[0].Count; ++x)
+            for (int x = 0; x < universe[0].Count; ++x)
             {
-                if (_input[y][x].IsGalaxy)
+                if (universe[y][x].IsGalaxy)
                 {
                     isGalaxy = true;
                     break;
@@ -61,12 +78,12 @@ public class Day_11 : BaseDay
             }
         }
 
-        for (int x = 0; x < _input[0].Count; ++x)
+        for (int x = 0; x < universe[0].Count; ++x)
         {
             bool isGalaxy = false;
-            for (int y = 0; y < _input.Count; ++y)
+            for (int y = 0; y < universe.Count; ++y)
             {
-                if (_input[y][x].IsGalaxy)
+                if (universe[y][x].IsGalaxy)
                 {
                     isGalaxy = true;
                     break;
@@ -82,29 +99,103 @@ public class Day_11 : BaseDay
         for (int y = 0; y < yGaps.Count; ++y)
         {
             var inputIndex = yGaps[y] + y;
-            _input.Insert(inputIndex, _input[inputIndex].ToList());
+            universe.Insert(inputIndex, [.. universe[inputIndex]]);
         }
 
         var emptyPoint = new Point('.', -1, -1);
 
         for (int x = 0; x < xGaps.Count; ++x)
         {
-            for (int y = 0; y < _input.Count; ++y)
+            for (int y = 0; y < universe.Count; ++y)
             {
-                _input[y].Insert(xGaps[x] + x, emptyPoint);
+                universe[y].Insert(xGaps[x] + x, emptyPoint);
             }
         }
+
+        return universe;
     }
 
-    private List<Point> ExtractGalaxies()
+    private static List<List<Point>> ExpandUniverse_Part2(List<List<Point>> universe)
     {
-        var galaxies = new List<Point>(_input.Count / 10);
+        const int expandFactor = 999_999;
 
-        for (int y = 0; y < _input.Count; ++y)
+        List<int> yGaps = new(universe.Count);
+        for (int y = 0; y < universe.Count; ++y)
         {
-            for (int x = 0; x < _input[0].Count; ++x)
+            bool isGalaxy = false;
+            for (int x = 0; x < universe[0].Count; ++x)
             {
-                if (_input[y][x].IsGalaxy)
+                if (universe[y][x].IsGalaxy)
+                {
+                    isGalaxy = true;
+                    break;
+                }
+            }
+
+            if (!isGalaxy)
+            {
+                yGaps.Add(y);
+            }
+        }
+
+        List<int> xGaps = new(universe[0].Count);
+        for (int x = 0; x < universe[0].Count; ++x)
+        {
+            bool isGalaxy = false;
+            for (int y = 0; y < universe.Count; ++y)
+            {
+                if (universe[y][x].IsGalaxy)
+                {
+                    isGalaxy = true;
+                    break;
+                }
+            }
+
+            if (!isGalaxy)
+            {
+                xGaps.Add(x);
+            }
+        }
+
+        // Expand on y
+        for (int y = 0; y < yGaps.Count; ++y)
+        {
+            for (int i = 0; i < expandFactor; ++i)
+            {
+                var inputIndex = yGaps[y] + y * expandFactor;
+                universe.Insert(inputIndex, [.. universe[inputIndex]]);
+            }
+        }
+
+        var emptyPoint = new Point('.', -1, -1);
+
+        Print(universe);
+
+        // Expand on x
+        for (int x = 0; x < xGaps.Count; ++x)
+        {
+            for (int y = 0; y < universe.Count; ++y)
+            {
+                for (int i = 0; i < expandFactor; ++i)
+                {
+                    int inputIndex = xGaps[x] + x * expandFactor;
+                    universe[y].Insert(inputIndex, emptyPoint);
+                }
+            }
+        }
+
+        return universe;
+    }
+
+    private static List<Point> ExtractGalaxies(List<List<Point>> universe)
+    {
+        var galaxies = new List<Point>(universe.Count / 10);
+
+        for (int y = 0; y < universe.Count; ++y)
+        {
+            for (int x = 0; x < universe[0].Count; ++x)
+            {
+                if (universe[y][x].IsGalaxy)
                 {
                     galaxies.Add(new('#', x, y));
                 }
@@ -112,13 +203,6 @@ public class Day_11 : BaseDay
         }
 
         return galaxies;
-    }
-
-    public override ValueTask<string> Solve_2()
-    {
-        int result = 0;
-
-        return new($"{result}");
     }
 
     private IEnumerable<List<Point>> ParseInput()
