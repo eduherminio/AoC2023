@@ -1,12 +1,4 @@
-﻿using MoreLinq;
-using MoreLinq.Extensions;
-using System.Collections.Concurrent;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text;
 
 namespace AoC_2023;
 
@@ -38,6 +30,7 @@ public class Day_12 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
+        //return new("");
         List<List<string>> previousSolution = new(_input.Count);
         foreach (var _ in _input)
         {
@@ -430,11 +423,11 @@ public class Day_12 : BaseDay
                                 isPossible = false;
 
                                 // Old approach
-                                var unknownPositionsBefore = row.Records.Where((ch, index) => index > finalRecordIndex && ch == '?').Count();
+                                var unknownPositionsAfter = row.Records.Where((ch, index) => index > finalRecordIndex && ch == '?').Count();
 
-                                if (unknownPositionsBefore < possibility.Length - 1)
+                                if (unknownPositionsAfter < possibility.Length - 1)
                                 {
-                                    var discardedPossibility = possibility[^(unknownPositionsBefore + 2)..];
+                                    var discardedPossibility = possibility[^(unknownPositionsAfter + 2)..];
                                     //possibilities.RemoveAll(x => x.EndsWith(discardedPossibility));
                                     possibilityIndex = -1;
                                 }
@@ -448,11 +441,11 @@ public class Day_12 : BaseDay
                             {
                                 isPossible = false;
 
-                                var unknownPositionsBefore = row.Records.Where((ch, index) => index > finalRecordIndex && ch == '?').Count();
+                                var unknownPositionsAfter = row.Records.Where((ch, index) => index > finalRecordIndex && ch == '?').Count();
 
-                                if (unknownPositionsBefore < possibility.Length - 1)
+                                if (unknownPositionsAfter < possibility.Length - 1)
                                 {
-                                    var discardedPossibility = possibility[^(unknownPositionsBefore + 2)..];
+                                    var discardedPossibility = possibility[^(unknownPositionsAfter + 2)..];
                                     possibilities.RemoveAll(x => x.EndsWith(discardedPossibility));
                                     possibilityIndex = -1;
                                 }
@@ -564,7 +557,8 @@ public class Day_12 : BaseDay
         var possibilities = new List<string>(row.Records.Length * row.Records.Length);
         //var possibilities = new ConcurrentBag<string>();
 
-        int maskLength = unknownPositionsCount - previousSolutions[0].Length;
+        const int previousSolutionLengthNotToUse = 1;
+        int maskLength = unknownPositionsCount - previousSolutions[0].Length + previousSolutionLengthNotToUse;
         var maskSb = new StringBuilder(maskLength);
         for (int i = 0; i < maskLength; ++i)
         {
@@ -575,9 +569,10 @@ public class Day_12 : BaseDay
 
         var maxCombinationsCountString = Convert.ToString(mask, 2);
 
-        foreach (var previousSolution in previousSolutions)
+        foreach (string previousSolution in previousSolutions)
         {
-            var expectedOnesCount = row.Conditions.Sum() - row.Records.Count(ch => ch == '#') - previousSolution.Count(ch => ch == '1');
+            var reusedPreviousSolution = previousSolution?.Length == 0 ? "" : previousSolution[..^(previousSolutionLengthNotToUse)];
+            var expectedOnesCount = row.Conditions.Sum() - row.Records.Count(ch => ch == '#') - reusedPreviousSolution.Count(ch => ch == '1');
 
             //Parallel.For(0, mask, n =>
             for (long n = 0; n <= mask; n++)
@@ -589,7 +584,7 @@ public class Day_12 : BaseDay
                     //return;
                 }
 
-                var sb = new StringBuilder(previousSolution) { Capacity = maxCombinationsCountString.Length + previousSolution.Length };
+                var sb = new StringBuilder(reusedPreviousSolution) { Capacity = maxCombinationsCountString.Length + reusedPreviousSolution.Length };
                 for (int j = binaryString.Length; j < maxCombinationsCountString.Length; ++j)
                 {
                     sb.Append('0');
